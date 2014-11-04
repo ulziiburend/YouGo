@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/place_item_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop" />
+
+    <mn.donate.yougo.text.Bold
+        android:id="@+id/place_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_trans"
+        android:paddingBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="2"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <mn.donate.yougo.text.Bold
+        android:id="@+id/place_item_tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/place_item_name"
+        android:gravity="left"
+        android:paddingLeft="10dp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="2"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/place_item_hot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:paddingTop="5dp"
+        android:src="@drawable/new_label"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/place_item_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="right"
+        android:src="@drawable/rate_one" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/white_round"
+        android:padding="5dp" >
+
+        <mn.donate.yougo.text.Light
+            android:id="@+id/place_item_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/mainColor" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@android:color/white"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+
+    <mn.donate.yougo.utils.CircleImageView
+        android:id="@+id/navi_pro_img"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        app:border_color="@color/mainColor"
+        app:border_width="1dp" />
+
+    <mn.donate.yougo.text.Bold
+        android:id="@+id/navi_pro_name"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:textColor="@color/mainColor"
+        android:textSize="14sp" />
+
+</LinearLayout>
