@@ -30,11 +30,12 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/CustomActionBarTheme" >
         <activity
             android:name="mn.donate.yougo.splash.Splash"
@@ -47,11 +48,15 @@
         </activity>
         <activity
             android:name="mn.donate.yougo.splash.WalkThrough"
-            android:theme="@android:style/Theme.Black.NoTitleBar" 
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity
             android:name=".MainActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="mn.donate.user.UserAc"
             android:label="@string/app_name" >
         </activity>
         <activity
@@ -62,6 +67,7 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/fb_appId" />
+
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
@@ -75,7 +81,8 @@
 
         <service android:name=".GCMIntentService" >
         </service>
-               <meta-data
+
+        <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDRlGjKXhiu54kydmP1EV38JGKWb9Anrbs" />
         <meta-data

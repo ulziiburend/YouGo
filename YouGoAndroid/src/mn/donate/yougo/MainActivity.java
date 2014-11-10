@@ -6,8 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -43,13 +41,14 @@ public class MainActivity extends ActionBarActivity implements
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		// update the main content by replacing fragments
 		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, position+1);
+		args.putInt(ARG_SECTION_NUMBER, position + 1);
 		switch (position) {
+
 		case 1:
 			PlaceFrag home = new PlaceFrag();
 			home.setArguments(args);
 			fragmentManager.beginTransaction().replace(R.id.container, home)
-					.commit();			
+					.commit();
 			break;
 
 		default:
@@ -59,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	public void onSectionAttached(int number) {
-		switch (number) {
+		switch (number - 1) {
 		case 1:
 			mTitle = getString(R.string.title_section1);
 			break;
@@ -75,7 +74,9 @@ public class MainActivity extends ActionBarActivity implements
 		case 5:
 			mTitle = getString(R.string.title_section5);
 			break;
+
 		}
+
 	}
 
 	public void restoreActionBar() {
@@ -83,8 +84,7 @@ public class MainActivity extends ActionBarActivity implements
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle(mTitle);
-		Log.i("title", mTitle+"");
-	}
 
+	}
 
 }

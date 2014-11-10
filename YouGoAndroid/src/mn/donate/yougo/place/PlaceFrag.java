@@ -26,7 +26,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +50,8 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
-public class PlaceFrag extends Fragment {
+public class PlaceFrag extends Fragment implements
+		SearchView.OnQueryTextListener {
 	View v;
 	private ViewPager mViewPager;
 	private RequestQueue mRequestQueue;
@@ -56,6 +59,9 @@ public class PlaceFrag extends Fragment {
 	private ProgressDialog progress;
 	private List<PlaceType> catData;
 	private PagerAdapter mPagerAdapter;
+	private SearchView mSearchView;
+	private PlaceFind placeSearch;
+	private MenuItem searchItem;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -85,7 +91,6 @@ public class PlaceFrag extends Fragment {
 				catData = helper.getTypeDao().queryForAll();
 				setAdapters();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -102,9 +107,15 @@ public class PlaceFrag extends Fragment {
 	}
 
 	public class PagerAdapter extends FragmentStatePagerAdapter {
+		String queryStr;
 
 		public PagerAdapter(FragmentManager fm) {
 			super(fm);
+		}
+
+		public PagerAdapter(FragmentManager fm, String query) {
+			super(fm);
+			this.queryStr = query;
 		}
 
 		@Override
@@ -121,7 +132,7 @@ public class PlaceFrag extends Fragment {
 		public Fragment getItem(int position) {
 
 			return SampleListFragment.newInstance(position,
-					catData.get(position).id);
+					catData.get(position).id, queryStr);
 
 		}
 
@@ -184,6 +195,7 @@ public class PlaceFrag extends Fragment {
 						Toast.makeText(getActivity(),
 								getString(R.string.noData), Toast.LENGTH_SHORT)
 								.show();
+						
 						progress.dismiss();
 					}
 
@@ -210,30 +222,6 @@ public class PlaceFrag extends Fragment {
 		setAdapters();
 	}
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		if (!MainActivity.mNavigationDrawerFragment.isDrawerOpen()) {
-			inflater.inflate(R.menu.main, menu);
-
-		}
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	private void initFilterDialog() {
-		Toast.makeText(getActivity(), "search", Toast.LENGTH_LONG).show();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.action_search) {
-
-			initFilterDialog();
-
-		}
-
-		return true;
-	}
-
 	public static class SampleListFragment extends Fragment implements
 			OnScrollListener {
 
@@ -249,12 +237,14 @@ public class PlaceFrag extends Fragment {
 		private boolean flag_loading = false;
 		private View v;
 		int mNum;
+		String searchQuery;
 
-		public static Fragment newInstance(int num, int catId) {
+		public static Fragment newInstance(int num, int catId, String query) {
 
 			SampleListFragment f = new SampleListFragment();
 			Bundle b = new Bundle();
 			b.putInt("num", num + 1);
+			b.putString("query", query);
 			b.putInt("cat", catId);
 			f.setArguments(b);
 			return f;
@@ -266,6 +256,8 @@ public class PlaceFrag extends Fragment {
 			// mPosition = getArguments().getInt(ARG_POSITION);
 			mNum = getArguments() != null ? getArguments().getInt("num") : 1;
 			cat_id = getArguments().getInt("cat");
+			searchQuery = getArguments().getString("query");
+
 			mListItems = new ArrayList<Place>();
 		}
 
@@ -313,11 +305,8 @@ public class PlaceFrag extends Fragment {
 			});
 		}
 
-		// mListView.setAdapter(new ArrayAdapter<String>(getActivity(),
-		// R.layout.list_item, android.R.id.text1, mListItems));
-
 		private void getPlace(final int sIndex) {
-
+			mListView.addFooterView(load_footer);
 			CustomRequest adReq = new CustomRequest(Method.POST,
 					this.getString(R.string.mainIp) + "place", null,
 					new Listener<JSONObject>() {
@@ -368,6 +357,8 @@ public class PlaceFrag extends Fragment {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("sindex", sIndex + "");
 					params.put("type_id", cat_id + "");
+					if(searchQuery!=null )
+					params.put("query", searchQuery );
 					return params;
 				}
 
@@ -394,11 +385,13 @@ public class PlaceFrag extends Fragment {
 					place.credit_cards = obj.getInt("credit_cards");
 					place.wifi = obj.getInt("wifi");
 					place.phone = obj.optString("phone");
+					
 					place.work_hour = obj.optString("working hours");
 					place.tag1 = obj.getString("tag1_name");
 					place.tag2 = obj.getString("tag2_name");
 					place.tag3 = obj.getString("tag3_name");
 					place.distance = obj.getDouble("distance");
+					place.price=obj.getInt("price");
 					helper.getPlaceDao().create(place);
 					mListItems.add(place);
 
@@ -431,4 +424,53 @@ public class PlaceFrag extends Fragment {
 		}
 
 	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		if (!MainActivity.mNavigationDrawerFragment.isDrawerOpen()) {
+			inflater.inflate(R.menu.main, menu);
+			searchItem = menu.findItem(R.id.action_search);
+			mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+			mSearchView.setOnQueryTextListener(this);
+		}
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_search:
+			placeSearch = new PlaceFind();
+			getActivity().getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, placeSearch).addToBackStack("search")
+					.commit();
+			mSearchView.setIconified(false);
+			break;
+
+		}
+
+		return true;
+
+	}
+
+	@Override
+	public boolean onQueryTextChange(String arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String arg0) {
+		// TODO Auto-generated method stub
+		Log.i("hahah", arg0);
+		getActivity().getSupportFragmentManager().popBackStack();
+		MenuItemCompat.collapseActionView(searchItem);
+		
+			mPagerAdapter = new PagerAdapter(getActivity()
+					.getSupportFragmentManager(), arg0);
+			mViewPager.setAdapter(mPagerAdapter);
+	
+		return false;
+	}
+
 }

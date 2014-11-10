@@ -2,9 +2,8 @@ package mn.donate.yougo.datamodel;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
 @DatabaseTable
-public class Place {
+public class SavedPlace {
 	@DatabaseField(generatedId=true)
 	public int id;
 	@DatabaseField
@@ -45,7 +44,4 @@ public class Place {
 	public int credit_cards;
 	@DatabaseField
 	public int wifi;
-	@DatabaseField
-	public int price;
-
 }

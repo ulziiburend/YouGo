@@ -311,6 +311,8 @@ public class WalkThrough extends FragmentActivity {
 										|| response.getInt("response") == 2) {
 									Editor edit = preferences.edit();
 									edit.putString("username", user.getName());
+									edit.putString("followers", 	response.getString("followers"));
+									edit.putString("following", 	response.getString("following"));
 									edit.putString("my_id",
 											response.getString("user_id"));
 									edit.putString("pro_img",

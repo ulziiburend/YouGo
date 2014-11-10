@@ -4,10 +4,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+import mn.donate.user.UserAc;
 import mn.donate.yougo.text.Bold;
 import mn.donate.yougo.utils.CircleImageView;
 import mn.donate.yougo.utils.LruBitmapCache;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,7 +38,8 @@ import android.widget.ListView;
  * > design guidelines</a> for a complete explanation of the behaviors
  * implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends Fragment implements
+		OnClickListener {
 
 	/**
 	 * Remember the position of the selected item.
@@ -120,6 +124,7 @@ public class NavigationDrawerFragment extends Fragment {
 		pro_name.setText(proSp.getString("username", "user"));
 
 		mDrawerListView.addHeaderView(profileView);
+		profileView.setOnClickListener(this);
 		mDrawerListView
 				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 					@Override
@@ -137,7 +142,7 @@ public class NavigationDrawerFragment extends Fragment {
 						getString(R.string.title_section4),
 						getString(R.string.title_section5), }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-	
+
 		return mDrawerListView;
 	}
 
@@ -325,5 +330,13 @@ public class NavigationDrawerFragment extends Fragment {
 		 * Called when an item in the navigation drawer is selected.
 		 */
 		void onNavigationDrawerItemSelected(int position);
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		if (v == profileView) {
+			startActivity(new Intent(getActivity(), UserAc.class));
+		}
 	}
 }

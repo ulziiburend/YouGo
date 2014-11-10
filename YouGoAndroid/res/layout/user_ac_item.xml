@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <mn.donate.yougo.utils.CircleImageView
+            android:id="@+id/user_ac_place_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:border_color="@color/mainColor"
+            app:border_width="1dp" />
+
+        <mn.donate.yougo.text.Regular
+            android:id="@+id/user_ac_placeName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <mn.donate.yougo.text.Light
+        android:id="@+id/user_ac_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/blue_title" />
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/user_ac_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <mn.donate.yougo.text.Regular
+        android:id="@+id/user_ac_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="4"
+        android:padding="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>
