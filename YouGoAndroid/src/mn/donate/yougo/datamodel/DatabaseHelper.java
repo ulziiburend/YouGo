@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.google.android.gms.internal.ct;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -19,6 +18,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	Dao<Place, Integer> placeDao = null;
 	Dao<SavedPlace, Integer> savedPlaceDao = null;
 	Dao<UserActivity, Integer> useracDao = null;
+	Dao<UserFeed, Integer> userFeedDao = null;
+
 	public DatabaseHelper(Context context) {
 		super(context, databaseName, null, databaseVersion);
 		// TODO Auto-generated constructor stub
@@ -34,8 +35,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					SavedPlace.class);
 			TableUtils
 					.createTableIfNotExists(connectionSource, PlaceType.class);
-			TableUtils
-			.createTableIfNotExists(connectionSource, UserActivity.class);
+			TableUtils.createTableIfNotExists(connectionSource,
+					UserActivity.class);
+			TableUtils.createTableIfNotExists(connectionSource, UserFeed.class);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,6 +56,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, SavedPlace.class);
 			TableUtils.createTable(connectionSource, PlaceType.class);
 			TableUtils.createTable(connectionSource, UserActivity.class);
+			TableUtils.createTable(connectionSource, UserFeed.class);
 			onCreate(arg0);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -67,6 +70,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return typeDao;
 	}
 
+	public Dao<UserFeed, Integer> getUserFeedDao() throws SQLException {
+		if (userFeedDao == null)
+			userFeedDao = getDao(UserFeed.class);
+		return userFeedDao;
+	}
+
 	public Dao<SavedPlace, Integer> getSavedPlaceDao() throws SQLException {
 		if (savedPlaceDao == null)
 			savedPlaceDao = getDao(SavedPlace.class);
@@ -78,11 +87,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			placeDao = getDao(Place.class);
 		return placeDao;
 	}
+
 	public Dao<UserActivity, Integer> getUserAcDao() throws SQLException {
 		if (useracDao == null)
 			useracDao = getDao(UserActivity.class);
 		return useracDao;
 	}
+
 	public void deleteUserAC() {
 		try {
 			TableUtils.clearTable(connectionSource, UserActivity.class);
@@ -91,6 +102,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			e.printStackTrace();
 		}
 	}
+
 	public void deleteType() {
 		try {
 			TableUtils.clearTable(connectionSource, PlaceType.class);
@@ -101,9 +113,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	public void deleteFeed() {
+		try {
+			TableUtils.clearTable(connectionSource, UserFeed.class);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
+		userFeedDao = null;
 		typeDao = null;
 		savedPlaceDao = null;
 		placeDao = null;

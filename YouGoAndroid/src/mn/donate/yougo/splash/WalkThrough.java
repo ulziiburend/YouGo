@@ -10,6 +10,7 @@ import mn.donate.yougo.MainActivity;
 import mn.donate.yougo.R;
 import mn.donate.yougo.text.Regular;
 import mn.donate.yougo.utils.CustomRequest;
+import mn.donate.yougo.utils.MySingleton;
 import mn.donate.yougo.utils.WakeLocker;
 
 import org.json.JSONException;
@@ -37,10 +38,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request.Method;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
@@ -188,7 +187,7 @@ public class WalkThrough extends FragmentActivity {
 
 		int mNum;
 		View v;
-		private ProgressDialog pDialog;
+		private ProgressDialog progress;
 		private LoginButton loginButton;
 		private GraphUser user;
 		private UiLifecycleHelper uiHelper;
@@ -248,7 +247,6 @@ public class WalkThrough extends FragmentActivity {
 		public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 			// TODO Auto-generated method stub
 			super.onActivityCreated(savedInstanceState);
-			pDialog = new ProgressDialog(getActivity());
 			loginButton.setPublishPermissions(Arrays.asList("publish_actions"));
 			loginButton
 					.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
@@ -297,7 +295,7 @@ public class WalkThrough extends FragmentActivity {
 		}
 
 		private void makeReq() {
-			RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
 			CustomRequest loginReq = new CustomRequest(Method.POST,
 					getActivity().getString(R.string.mainIp) + "login", null,
 					new Response.Listener<JSONObject>() {
@@ -311,8 +309,10 @@ public class WalkThrough extends FragmentActivity {
 										|| response.getInt("response") == 2) {
 									Editor edit = preferences.edit();
 									edit.putString("username", user.getName());
-									edit.putString("followers", 	response.getString("followers"));
-									edit.putString("following", 	response.getString("following"));
+									edit.putString("followers",
+											response.getString("followers"));
+									edit.putString("following",
+											response.getString("following"));
 									edit.putString("my_id",
 											response.getString("user_id"));
 									edit.putString("pro_img",
@@ -335,14 +335,14 @@ public class WalkThrough extends FragmentActivity {
 								e.printStackTrace();
 							}
 
-							pDialog.hide();
+							progress.dismiss();
 						}
 					}, new Response.ErrorListener() {
 
 						@Override
 						public void onErrorResponse(VolleyError error) {
 
-							pDialog.hide();
+							progress.dismiss();
 						}
 					}) {
 
@@ -358,15 +358,15 @@ public class WalkThrough extends FragmentActivity {
 					return params;
 				}
 			};
-			requestQueue.add(loginReq);
+			MySingleton.getInstance(getActivity()).addToRequestQueue(loginReq);
 		}
 
 		private void loginCheck() {
 
 			if (user != null) {
 				Log.i(user.getFirstName(), user.getId());
-				pDialog.setMessage("Loading...");
-				pDialog.show();
+				progress = ProgressDialog.show(getActivity(), "",
+						getString(R.string.loading));
 				makeReq();
 			}
 		}

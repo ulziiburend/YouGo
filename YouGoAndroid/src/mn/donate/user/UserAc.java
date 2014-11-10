@@ -2,33 +2,31 @@ package mn.donate.user;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import mn.donate.yougo.R;
+import mn.donate.yougo.datamodel.DatabaseHelper;
+import mn.donate.yougo.datamodel.SavedPlace;
+import mn.donate.yougo.datamodel.UserActivity;
+import mn.donate.yougo.text.Bold;
+import mn.donate.yougo.text.Light;
+import mn.donate.yougo.utils.CircleImageView;
+import mn.donate.yougo.utils.CustomRequest;
+import mn.donate.yougo.utils.MySingleton;
+import mn.donate.yougo.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mn.doanate.yougo.adapter.PlaceAdapter;
-import mn.doanate.yougo.adapter.UserAcAdapter;
-import mn.donate.yougo.R;
-import mn.donate.yougo.datamodel.DatabaseHelper;
-import mn.donate.yougo.datamodel.Place;
-import mn.donate.yougo.datamodel.UserActivity;
-import mn.donate.yougo.place.PlaceFrag.PagerAdapter;
-import mn.donate.yougo.place.PlaceFrag.SampleListFragment;
-import mn.donate.yougo.text.Bold;
-import mn.donate.yougo.text.Light;
-import mn.donate.yougo.utils.CircleImageView;
-import mn.donate.yougo.utils.CustomRequest;
-import mn.donate.yougo.utils.LruBitmapCache;
-import mn.donate.yougo.utils.Utils;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -38,17 +36,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.Request.Method;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
@@ -61,7 +60,6 @@ public class UserAc extends ActionBarActivity {
 	CircleImageView user_img;
 	private ImageLoader mImageLoader;
 
-	private RequestQueue mRequestQueue;
 	private ActionBar bar;
 	private String userFeed[] = new String[2];
 	public static String UserId;
@@ -83,9 +81,8 @@ public class UserAc extends ActionBarActivity {
 		user_img = (CircleImageView) findViewById(R.id.user_img);
 		pager = (ViewPager) findViewById(R.id.user_pager);
 		preferences = getSharedPreferences("user", MODE_PRIVATE);
-		mRequestQueue = Volley.newRequestQueue(this);
 
-		mImageLoader = new ImageLoader(mRequestQueue, new LruBitmapCache());
+		mImageLoader = MySingleton.getInstance(this).getImageLoader();
 		UserId = preferences.getString("my_id", "0");
 		name.setText(preferences.getString("username", ""));
 		followers.setText(preferences.getString("followers", ""));
@@ -119,11 +116,17 @@ public class UserAc extends ActionBarActivity {
 
 		@Override
 		public Fragment getItem(int position) {
+			switch (position) {
+			case 0:
+				return UserTabFrag.newInstance(position);
+			case 1:
+				return UserSaveFrag.newInstance(position);
+			default:
+				return UserTabFrag.newInstance(position);
 
-			return UserTabFrag.newInstance(position);
+			}
 
 		}
-
 	}
 
 	@Override
@@ -149,12 +152,64 @@ public class UserAc extends ActionBarActivity {
 		return true;
 	}
 
+	public static class UserSaveFrag extends Fragment {
+		int mNum;
+		private ListView mListView;
+		private DatabaseHelper helper;
+		View v;
+		private SavedPlaceAdapter adapter;
+		private List<SavedPlace> mListItems;
+
+		public static Fragment newInstance(int num) {
+
+			UserSaveFrag f = new UserSaveFrag();
+			Bundle b = new Bundle();
+			b.putInt("num", num + 1);
+			f.setArguments(b);
+			return f;
+		}
+
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			// mPosition = getArguments().getInt(ARG_POSITION);
+			mNum = getArguments() != null ? getArguments().getInt("num") : 1;
+
+			mListItems = new ArrayList<SavedPlace>();
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			v = inflater.inflate(R.layout.fragment_list, container, false);
+			mListView = (ListView) v.findViewById(R.id.listView);
+
+			return v;
+		}
+
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+
+			helper = new DatabaseHelper(getActivity());
+			try {
+				mListItems = helper.getSavedPlaceDao().queryForAll();
+				adapter = new SavedPlaceAdapter(getActivity(), mListItems);
+				mListView.setAdapter(adapter);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	public static class UserTabFrag extends Fragment implements
-			OnScrollListener {
+			OnScrollListener, OnRefreshListener {
 
 		private int index = 0;
 		private ListView mListView;
-		private ArrayList<UserActivity> mListItems;
+		private List<UserActivity> mListItems;
 		private View load_footer;
 		private RequestQueue mRequestQueue;
 		private UserAcAdapter adapter;
@@ -163,7 +218,8 @@ public class UserAc extends ActionBarActivity {
 		private boolean flag_loading = false;
 		private View v;
 		int mNum;
-		String searchQuery;
+		TextView nodata;
+		SwipeRefreshLayout swipeLayout;
 
 		public static Fragment newInstance(int num) {
 
@@ -180,7 +236,6 @@ public class UserAc extends ActionBarActivity {
 			// mPosition = getArguments().getInt(ARG_POSITION);
 			mNum = getArguments() != null ? getArguments().getInt("num") : 1;
 
-			mListItems = new ArrayList<UserActivity>();
 		}
 
 		@Override
@@ -188,9 +243,17 @@ public class UserAc extends ActionBarActivity {
 				Bundle savedInstanceState) {
 			v = inflater.inflate(R.layout.fragment_list, container, false);
 			mListView = (ListView) v.findViewById(R.id.listView);
+			nodata = (TextView) v.findViewById(R.id.list_nodata);
 			load_footer = inflater.inflate(R.layout.list_load_footer,
 					mListView, false);
 			mListView.addFooterView(load_footer);
+			swipeLayout = (SwipeRefreshLayout) v
+					.findViewById(R.id.swipe_container);
+			swipeLayout.setOnRefreshListener(this);
+			// swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+			// android.R.color.holo_green_light,
+			// android.R.color.holo_orange_light,
+			// android.R.color.holo_red_light);
 			return v;
 		}
 
@@ -199,13 +262,19 @@ public class UserAc extends ActionBarActivity {
 			super.onActivityCreated(savedInstanceState);
 
 			helper = new DatabaseHelper(getActivity());
-
+			try {
+				mListItems = helper.getUserAcDao().queryForAll();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			mRequestQueue = Volley.newRequestQueue(getActivity());
 			adapter = new UserAcAdapter(getActivity(), mListItems);
 			mListView.setAdapter(adapter);
 
 			if (Utils.isNetworkAvailable(getActivity())) {
-				getActivityFeed(index, UserAc.UserId);
+				helper.deleteUserAC();
+				getActivityFeed(index, UserAc.UserId, false);
 			} else
 				Toast.makeText(getActivity(),
 						getActivity().getString(R.string.noNet),
@@ -227,7 +296,8 @@ public class UserAc extends ActionBarActivity {
 			});
 		}
 
-		private void getActivityFeed(int sIndex, String user_id) {
+		private void getActivityFeed(int sIndex, String user_id,
+				final boolean refresh) {
 			mListView.addFooterView(load_footer);
 			CustomRequest adReq = new CustomRequest(Method.GET,
 					this.getString(R.string.mainIp) + "activity/user_id="
@@ -247,10 +317,17 @@ public class UserAc extends ActionBarActivity {
 									if (num_rows < 10) {
 										isFinish = true;
 									}
+									if (num_rows == 0
+											&& adapter.getCount() == 0)
+										nodata.setVisibility(View.VISIBLE);
+									else {
+										nodata.setVisibility(View.GONE);
+									}
+
 									index = index + 10;
 									JSONArray data = response
 											.getJSONArray("data");
-									makeAc(data);
+									makeAc(data, refresh);
 
 								}
 								flag_loading = false;
@@ -263,6 +340,8 @@ public class UserAc extends ActionBarActivity {
 								e.printStackTrace();
 							}
 							mListView.removeFooterView(load_footer);
+							if (refresh)
+								swipeLayout.setRefreshing(false);
 						}
 					}, new Response.ErrorListener() {
 
@@ -271,6 +350,8 @@ public class UserAc extends ActionBarActivity {
 							// TODO Auto-generated method stub
 							Log.i("error", error.getMessage() + "");
 							mListView.removeFooterView(load_footer);
+							if (refresh)
+								swipeLayout.setRefreshing(false);
 						}
 
 					}) {
@@ -279,11 +360,12 @@ public class UserAc extends ActionBarActivity {
 			mRequestQueue.add(adReq);
 		}
 
-		protected void makeAc(JSONArray data) throws JSONException,
-				SQLException {
+		protected void makeAc(JSONArray data, boolean refresh)
+				throws JSONException, SQLException {
 			// TODO Auto-generated method stub
 			if (data.length() > 0) {
-				helper.deleteUserAC();
+				if (refresh)
+					mListItems.clear();
 				for (int i = 0; i < data.length(); i++) {
 					UserActivity ac = new UserActivity();
 					JSONObject obj = data.getJSONObject(i);
@@ -306,6 +388,7 @@ public class UserAc extends ActionBarActivity {
 			}
 
 			adapter.notifyDataSetChanged();
+
 			mListView.setOnScrollListener(this);
 		}
 
@@ -323,9 +406,16 @@ public class UserAc extends ActionBarActivity {
 					&& totalItemCount != 0) {
 				if (flag_loading == false && isFinish == false) {
 					flag_loading = true;
-					getActivityFeed(index, UserAc.UserId);
+					getActivityFeed(index, UserAc.UserId, false);
 				}
 			}
+		}
+
+		@Override
+		public void onRefresh() {
+			// TODO Auto-generated method stub
+			index = 0;
+			getActivityFeed(index, UserId, true);
 		}
 
 	}

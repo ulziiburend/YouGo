@@ -1,11 +1,14 @@
 package mn.donate.yougo;
 
+import mn.donate.yougo.feed.FeedFrag;
 import mn.donate.yougo.place.PlaceFrag;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -15,7 +18,6 @@ public class MainActivity extends ActionBarActivity implements
 	 * navigation drawer.
 	 */
 	public static NavigationDrawerFragment mNavigationDrawerFragment;
-	private static final String ARG_SECTION_NUMBER = "section_number";
 	/**
 	 * Used to store the last screen title. For use in
 	 * {@link #restoreActionBar()}.
@@ -40,25 +42,27 @@ public class MainActivity extends ActionBarActivity implements
 	public void onNavigationDrawerItemSelected(int position) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		// update the main content by replacing fragments
-		Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, position + 1);
+
 		switch (position) {
-
 		case 1:
-			PlaceFrag home = new PlaceFrag();
-			home.setArguments(args);
-			fragmentManager.beginTransaction().replace(R.id.container, home)
-					.commit();
-			break;
 
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, PlaceFrag.newInstance(1)).commit();
+			break;
+		case 2:
+
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, FeedFrag.newInstance(2)).commit();
+			break;
 		default:
 			break;
 		}
+		//suuld nemsen
 
 	}
 
 	public void onSectionAttached(int number) {
-		switch (number - 1) {
+		switch (number) {
 		case 1:
 			mTitle = getString(R.string.title_section1);
 			break;
@@ -76,9 +80,19 @@ public class MainActivity extends ActionBarActivity implements
 			break;
 
 		}
+		Log.i("title:", mTitle+"");
 
+	
 	}
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+         
+            restoreActionBar();
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
 	public void restoreActionBar() {
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

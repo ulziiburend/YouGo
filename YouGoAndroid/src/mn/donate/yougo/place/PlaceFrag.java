@@ -1,18 +1,17 @@
 package mn.donate.yougo.place;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mn.doanate.yougo.adapter.PlaceAdapter;
 import mn.donate.yougo.MainActivity;
 import mn.donate.yougo.R;
 import mn.donate.yougo.datamodel.DatabaseHelper;
 import mn.donate.yougo.datamodel.Place;
 import mn.donate.yougo.datamodel.PlaceType;
 import mn.donate.yougo.utils.CustomRequest;
+import mn.donate.yougo.utils.MySingleton;
 import mn.donate.yougo.utils.Utils;
 
 import org.json.JSONArray;
@@ -28,6 +27,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request.Method;
@@ -48,7 +50,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 
 public class PlaceFrag extends Fragment implements
 		SearchView.OnQueryTextListener {
@@ -62,6 +63,7 @@ public class PlaceFrag extends Fragment implements
 	private SearchView mSearchView;
 	private PlaceFind placeSearch;
 	private MenuItem searchItem;
+	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -77,11 +79,13 @@ public class PlaceFrag extends Fragment implements
 		// // double latitude = location.getLatitude();
 		// Log.e("location:",longitude+"-"+latitude);
 		helper = new DatabaseHelper(getActivity());
-		mRequestQueue = Volley.newRequestQueue(getActivity());
+
 		progress = ProgressDialog.show(getActivity(), "",
 				getString(R.string.loading));
 
 		if (Utils.isNetworkAvailable(getActivity())) {
+			mRequestQueue = MySingleton.getInstance(getActivity())
+					.getRequestQueue();
 			getPlaceCat();
 		} else {
 			progress.dismiss();
@@ -142,7 +146,20 @@ public class PlaceFrag extends Fragment implements
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(
-				"section_number"));
+				ARG_SECTION_NUMBER));
+	}
+
+	public static PlaceFrag newInstance(int section) {
+
+		PlaceFrag f = new PlaceFrag();
+		Bundle b = new Bundle();
+		b.putInt(ARG_SECTION_NUMBER, section);
+		f.setArguments(b);
+
+		return f;
+	}
+
+	public PlaceFrag() {
 	}
 
 	@Override
@@ -195,7 +212,7 @@ public class PlaceFrag extends Fragment implements
 						Toast.makeText(getActivity(),
 								getString(R.string.noData), Toast.LENGTH_SHORT)
 								.show();
-						
+
 						progress.dismiss();
 					}
 
@@ -223,21 +240,24 @@ public class PlaceFrag extends Fragment implements
 	}
 
 	public static class SampleListFragment extends Fragment implements
-			OnScrollListener {
+			OnScrollListener, OnRefreshListener {
 
 		private int index = 0;
 		private ListView mListView;
-		private ArrayList<Place> mListItems;
+		private List<Place> mListItems;
 		private int cat_id;
 		private View load_footer;
-		private RequestQueue mRequestQueue;
+		private RequestQueue mRequestQueueFRag;
 		private PlaceAdapter adapter;
 		private boolean isFinish = false;
 		private DatabaseHelper helper;
 		private boolean flag_loading = false;
 		private View v;
+
 		int mNum;
 		String searchQuery;
+		SwipeRefreshLayout swipeLayout;
+		TextView nodata;
 
 		public static Fragment newInstance(int num, int catId, String query) {
 
@@ -258,9 +278,9 @@ public class PlaceFrag extends Fragment implements
 			cat_id = getArguments().getInt("cat");
 			searchQuery = getArguments().getString("query");
 
-			mListItems = new ArrayList<Place>();
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -268,7 +288,15 @@ public class PlaceFrag extends Fragment implements
 			mListView = (ListView) v.findViewById(R.id.listView);
 			load_footer = inflater.inflate(R.layout.list_load_footer,
 					mListView, false);
+			nodata = (TextView) v.findViewById(R.id.list_nodata);
 			mListView.addFooterView(load_footer);
+			swipeLayout = (SwipeRefreshLayout) v
+					.findViewById(R.id.swipe_container);
+			swipeLayout.setOnRefreshListener(this);
+			swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+					android.R.color.holo_green_light,
+					android.R.color.holo_orange_light,
+					android.R.color.holo_red_light);
 			return v;
 		}
 
@@ -278,16 +306,24 @@ public class PlaceFrag extends Fragment implements
 
 			helper = new DatabaseHelper(getActivity());
 
-			mRequestQueue = Volley.newRequestQueue(getActivity());
+			try {
+				mListItems = helper.getPlaceDao().queryForAll();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			adapter = new PlaceAdapter(getActivity(), mListItems);
-			mListView.setAdapter(adapter);
 
+			mListView.setAdapter(adapter);
 			if (Utils.isNetworkAvailable(getActivity())) {
-				getPlace(index);
-			} else
+				mRequestQueueFRag = MySingleton.getInstance(getActivity())
+						.getRequestQueue();
+				getPlace(index, false);
+			} else {
 				Toast.makeText(getActivity(),
 						getActivity().getString(R.string.noNet),
 						Toast.LENGTH_SHORT).show();
+			}
 			mListView.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
@@ -305,7 +341,8 @@ public class PlaceFrag extends Fragment implements
 			});
 		}
 
-		private void getPlace(final int sIndex) {
+		private void getPlace(final int sIndex, final boolean refresh) {
+
 			mListView.addFooterView(load_footer);
 			CustomRequest adReq = new CustomRequest(Method.POST,
 					this.getString(R.string.mainIp) + "place", null,
@@ -324,10 +361,16 @@ public class PlaceFrag extends Fragment implements
 									if (num_rows < 10) {
 										isFinish = true;
 									}
+									if (num_rows == 0
+											&& adapter.getCount() == 0)
+										nodata.setVisibility(View.VISIBLE);
+									else {
+										nodata.setVisibility(View.GONE);
+									}
 									index = index + 10;
 									JSONArray data = response
 											.getJSONArray("data");
-									makeAd(data);
+									makeAd(data, refresh);
 
 								}
 								flag_loading = false;
@@ -340,6 +383,8 @@ public class PlaceFrag extends Fragment implements
 								e.printStackTrace();
 							}
 							mListView.removeFooterView(load_footer);
+							if (refresh)
+								swipeLayout.setRefreshing(false);
 						}
 					}, new Response.ErrorListener() {
 
@@ -348,6 +393,8 @@ public class PlaceFrag extends Fragment implements
 							// TODO Auto-generated method stub
 							Log.i("error", error.getMessage() + "");
 							mListView.removeFooterView(load_footer);
+							if (refresh)
+								swipeLayout.setRefreshing(false);
 						}
 
 					}) {
@@ -357,19 +404,22 @@ public class PlaceFrag extends Fragment implements
 					Map<String, String> params = new HashMap<String, String>();
 					params.put("sindex", sIndex + "");
 					params.put("type_id", cat_id + "");
-					if(searchQuery!=null )
-					params.put("query", searchQuery );
+					if (searchQuery != null)
+						params.put("query", searchQuery);
 					return params;
 				}
 
 			};
-			mRequestQueue.add(adReq);
+
+			mRequestQueueFRag.add(adReq);
 		}
 
-		protected void makeAd(JSONArray data) throws JSONException,
-				SQLException {
+		protected void makeAd(JSONArray data, boolean refresh)
+				throws JSONException, SQLException {
 			// TODO Auto-generated method stub
 			if (data.length() > 0) {
+				if (refresh)
+					mListItems.clear();
 				for (int i = 0; i < data.length(); i++) {
 					Place place = new Place();
 					JSONObject obj = data.getJSONObject(i);
@@ -385,13 +435,13 @@ public class PlaceFrag extends Fragment implements
 					place.credit_cards = obj.getInt("credit_cards");
 					place.wifi = obj.getInt("wifi");
 					place.phone = obj.optString("phone");
-					
+
 					place.work_hour = obj.optString("working hours");
 					place.tag1 = obj.getString("tag1_name");
 					place.tag2 = obj.getString("tag2_name");
 					place.tag3 = obj.getString("tag3_name");
 					place.distance = obj.getDouble("distance");
-					place.price=obj.getInt("price");
+					place.price = obj.getInt("price");
 					helper.getPlaceDao().create(place);
 					mListItems.add(place);
 
@@ -401,6 +451,7 @@ public class PlaceFrag extends Fragment implements
 			}
 
 			adapter.notifyDataSetChanged();
+
 			mListView.setOnScrollListener(this);
 		}
 
@@ -418,9 +469,16 @@ public class PlaceFrag extends Fragment implements
 					&& totalItemCount != 0) {
 				if (flag_loading == false && isFinish == false) {
 					flag_loading = true;
-					getPlace(index);
+					getPlace(index, false);
 				}
 			}
+		}
+
+		@Override
+		public void onRefresh() {
+			// TODO Auto-generated method stub
+			index = 0;
+			getPlace(index, true);
 		}
 
 	}
@@ -462,14 +520,13 @@ public class PlaceFrag extends Fragment implements
 	@Override
 	public boolean onQueryTextSubmit(String arg0) {
 		// TODO Auto-generated method stub
-		Log.i("hahah", arg0);
 		getActivity().getSupportFragmentManager().popBackStack();
 		MenuItemCompat.collapseActionView(searchItem);
-		
-			mPagerAdapter = new PagerAdapter(getActivity()
-					.getSupportFragmentManager(), arg0);
-			mViewPager.setAdapter(mPagerAdapter);
-	
+
+		mPagerAdapter = new PagerAdapter(getActivity()
+				.getSupportFragmentManager(), arg0);
+		mViewPager.setAdapter(mPagerAdapter);
+
 		return false;
 	}
 

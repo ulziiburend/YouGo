@@ -1,13 +1,9 @@
 package mn.donate.yougo;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
-
 import mn.donate.user.UserAc;
 import mn.donate.yougo.text.Bold;
 import mn.donate.yougo.utils.CircleImageView;
-import mn.donate.yougo.utils.LruBitmapCache;
+import mn.donate.yougo.utils.MySingleton;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +26,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.android.volley.toolbox.ImageLoader;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation
@@ -74,7 +72,6 @@ public class NavigationDrawerFragment extends Fragment implements
 	private SharedPreferences proSp;
 	private ImageLoader mImageLoader;
 
-	private RequestQueue mRequestQueue;
 
 	public NavigationDrawerFragment() {
 	}
@@ -90,9 +87,8 @@ public class NavigationDrawerFragment extends Fragment implements
 				.getDefaultSharedPreferences(getActivity());
 		mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 		proSp = getActivity().getSharedPreferences("user", 0);
-		mRequestQueue = Volley.newRequestQueue(getActivity());
 
-		mImageLoader = new ImageLoader(mRequestQueue, new LruBitmapCache());
+		mImageLoader =MySingleton.getInstance(getActivity()).getImageLoader();
 		if (savedInstanceState != null) {
 			mCurrentSelectedPosition = savedInstanceState
 					.getInt(STATE_SELECTED_POSITION);
