@@ -1,7 +1,10 @@
 package mn.donate.yougo;
 
+import java.util.Locale;
+
 import mn.donate.yougo.feed.FeedFrag;
 import mn.donate.yougo.place.PlaceFrag;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,11 +31,18 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		Locale locale = new Locale("mn");
+		Locale.setDefault(locale);
+		Configuration config = getBaseContext().getResources()
+				.getConfiguration();
+		config.locale = locale;
+		getBaseContext().getResources().updateConfiguration(config,
+				getBaseContext().getResources().getDisplayMetrics());
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
-
+		getSupportActionBar().setIcon(
+				getResources().getDrawable(R.drawable.main_title));
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
@@ -63,9 +73,9 @@ public class MainActivity extends ActionBarActivity implements
 
 	public void onSectionAttached(int number) {
 		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			break;
+//		case 1:
+//			mTitle = getString(R.string.title_section1);
+//			break;
 		case 2:
 			mTitle = getString(R.string.title_section2);
 			break;

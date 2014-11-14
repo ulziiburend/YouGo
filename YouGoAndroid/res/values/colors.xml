@@ -12,5 +12,5 @@
     <color name="item_activated_color">#77CEEE</color>
     <color name="title_trans">#80232324</color>
     <color name="blue_title">#1a89d6</color>
-
+    <color name="gray_title">#7e7e7e</color>
 </resources>

@@ -11,7 +11,7 @@
         android:orientation="vertical" >
 
         <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/ad_det_slider"
+            android:id="@+id/place_det_slider"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:auto_cycle="false" />

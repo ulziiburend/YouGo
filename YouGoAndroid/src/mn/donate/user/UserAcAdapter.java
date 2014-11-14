@@ -2,6 +2,10 @@ package mn.donate.user;
 
 import java.util.List;
 
+import net.danlew.android.joda.DateUtils;
+
+import org.joda.time.DateTime;
+
 import mn.donate.yougo.R;
 import mn.donate.yougo.datamodel.UserActivity;
 import mn.donate.yougo.text.Light;
@@ -61,7 +65,14 @@ public class UserAcAdapter extends ArrayAdapter<UserActivity> {
 		if (item.rating > 1 && item.rating < 3)
 			hol.rate.setImageResource(R.drawable.rate_two);
 		hol.title.setText(item.title);
-		hol.date.setText(item.created_date);
+		String dates[] = item.created_date.split("-");
+		DateTime time = new DateTime(Integer.parseInt(dates[0]),
+				Integer.parseInt(dates[1]), Integer.parseInt(dates[2]),
+				Integer.parseInt(dates[3]), Integer.parseInt(dates[4]),
+				Integer.parseInt(dates[5]));
+
+		hol.date.setText(DateUtils.getRelativeTimeSpanString(mContext, time)
+				+ "");
 		hol.image.setImageUrl(imageIp
 
 		+ item.place_id + "/" + item.user_id + "/" + item.image, mImageLoader);

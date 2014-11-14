@@ -19,8 +19,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -50,9 +59,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
 
 public class PlaceFrag extends Fragment implements
-		SearchView.OnQueryTextListener {
+		SearchView.OnQueryTextListener,
+		GooglePlayServicesClient.ConnectionCallbacks,
+		GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
 	View v;
 	private ViewPager mViewPager;
 	private RequestQueue mRequestQueue;
@@ -64,20 +79,17 @@ public class PlaceFrag extends Fragment implements
 	private PlaceFind placeSearch;
 	private MenuItem searchItem;
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	LocationClient mLocationClient;
+	private LocationManager lm;
+	private static String lat;
+	private static String lng;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		// LocationManager lm = (LocationManager)
-		// getActivity().getSystemService(
-		// Context.LOCATION_SERVICE);
-		// Location location = lm
-		// .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		// // double longitude = location.getLongitude();
-		// // double latitude = location.getLatitude();
-		// Log.e("location:",longitude+"-"+latitude);
+		LocationCheck();
 		helper = new DatabaseHelper(getActivity());
 
 		progress = ProgressDialog.show(getActivity(), "",
@@ -167,7 +179,7 @@ public class PlaceFrag extends Fragment implements
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		v = inflater.inflate(R.layout.place_main, container, false);
-
+		mLocationClient = new LocationClient(getActivity(), this, this);
 		mViewPager = (ViewPager) v.findViewById(R.id.place_pager);
 		// actionBar = ((ActionBarActivity)
 		// getActivity()).getSupportActionBar();
@@ -303,7 +315,6 @@ public class PlaceFrag extends Fragment implements
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-
 			helper = new DatabaseHelper(getActivity());
 
 			try {
@@ -329,14 +340,12 @@ public class PlaceFrag extends Fragment implements
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					// TODO Auto-generated method stub
-					// Bundle b = new Bundle();
-					// b.putInt("ad_id", mListItems.get(position - 1).id);
-
-					// Intent adIntent = new Intent(getActivity(),
-					// AdDetail.class);
-					// adIntent.putExtras(b);
-					// startActivity(adIntent);
+					Bundle b = new Bundle();
+					b.putInt("place_id", mListItems.get(position).id);
+					Intent detIntent = new Intent(getActivity(),
+							PlaceDetail.class);
+					detIntent.putExtras(b);
+					startActivity(detIntent);
 				}
 			});
 		}
@@ -350,7 +359,6 @@ public class PlaceFrag extends Fragment implements
 
 						@Override
 						public void onResponse(JSONObject response) {
-							Log.e("responce", response + "");
 							try {
 								if (response != null
 										&& response.getInt("response") == 1) {
@@ -402,6 +410,10 @@ public class PlaceFrag extends Fragment implements
 				@Override
 				protected Map<String, String> getParams() {
 					Map<String, String> params = new HashMap<String, String>();
+					if (lat != null && lng != null) {
+						params.put("lat", lat);
+						params.put("lng", lng);
+					}
 					params.put("sindex", sIndex + "");
 					params.put("type_id", cat_id + "");
 					if (searchQuery != null)
@@ -530,4 +542,115 @@ public class PlaceFrag extends Fragment implements
 		return false;
 	}
 
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		if (arg0.hasResolution()) {
+			try {
+				// Start an Activity that tries to resolve the error
+				arg0.startResolutionForResult(getActivity(), 0);
+				/*
+				 * Thrown if Google Play services canceled the original
+				 * PendingIntent
+				 */
+			} catch (IntentSender.SendIntentException e) {
+				// Log the error
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		// TODO Auto-generated method stub
+		setupLoc();
+		Log.i("location", "connected");
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		// TODO Auto-generated method stub
+		Log.i("location", "disconnected");
+
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		// Connect the client.
+		mLocationClient.connect();
+	}
+
+	@Override
+	public void onStop() {
+		// Disconnect the client.
+		mLocationClient.disconnect();
+		super.onStop();
+	}
+
+	public void setupLoc() {
+		// Get the current location's latitude & longitude
+		Location currentLocation = mLocationClient.getLastLocation();
+
+		lat = Double.toString(currentLocation.getLatitude());
+		lng = Double.toString(currentLocation.getLongitude());
+		Log.v("long", lng);
+		Log.v("lat", lat);
+
+	}
+
+	private void LocationCheck() {
+		lm = (LocationManager) getActivity().getSystemService(
+				Context.LOCATION_SERVICE);
+		boolean gps_enabled = false, network_enabled = false;
+		if (lm == null)
+			lm = (LocationManager) getActivity().getSystemService(
+					Context.LOCATION_SERVICE);
+		try {
+			gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		} catch (Exception ex) {
+		}
+		try {
+			network_enabled = lm
+					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		} catch (Exception ex) {
+		}
+
+		if (!gps_enabled && !network_enabled) {
+			Builder dialog = new AlertDialog.Builder(getActivity());
+			dialog.setMessage(getActivity().getString(R.string.onGPS));
+			dialog.setPositiveButton(getActivity().getString(R.string.yes),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(
+								DialogInterface paramDialogInterface,
+								int paramInt) {
+							Intent myIntent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivity(myIntent);
+						}
+					});
+			dialog.setNegativeButton(getActivity().getString(R.string.no),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(
+								DialogInterface paramDialogInterface,
+								int paramInt) {
+							// TODO Auto-generated method stub
+
+						}
+					});
+			dialog.show();
+
+		}
+	}
 }

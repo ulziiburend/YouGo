@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -16,9 +15,8 @@
             android:id="@+id/user_ac_place_img"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:border_color="@color/mainColor"
-            android:src="@drawable/"
-            app:border_width="1dp" />
+            android:src="@drawable/place"
+ />
 
         <mn.donate.yougo.text.Regular
             android:id="@+id/user_ac_placeName"

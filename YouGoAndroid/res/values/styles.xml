@@ -27,13 +27,10 @@
 
     <!-- ActionBar styles -->
     <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="displayOptions">homeAsUp|showHome|showTitle</item>
-
         <!-- Support library compatibility -->
-        <item name="background">@color/mainColor</item>
+        <item name="background">@color/gray_title</item>
+        <item name="displayOptions">homeAsUp|showHome|showTitle</item>
     </style>
-
-
 
     <style name="CustomDialogTheme" parent="@android:style/Theme.Dialog">
         <item name="android:backgroundDimEnabled">true</item>

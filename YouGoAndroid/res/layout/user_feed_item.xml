@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/title_trans"
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/user_feed_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:gravity="center"
         android:orientation="horizontal" >
 
         <mn.donate.yougo.utils.CircleImageView
-            android:id="@+id/user_ac_place_img"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            app:border_color="@color/mainColor"
-            app:border_width="1dp" />
+            android:id="@+id/user_feed_profile"
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
 
         <mn.donate.yougo.text.Regular
-            android:id="@+id/user_ac_placeName"
+            android:id="@+id/user_feed_username"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -29,36 +28,71 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
-    <mn.donate.yougo.text.Light
-        android:id="@+id/user_ac_time"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp" >
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/user_feed_place_img"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop" />
+
+        <mn.donate.yougo.text.Bold
+            android:id="@+id/user_feed_place_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_trans"
+            android:paddingBottom="3dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            android:paddingTop="10dp"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/user_feed_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/rate_one" />
+    </RelativeLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:layout_marginBottom="5dp"
+        android:background="@android:color/white"
+        android:orientation="vertical" >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/blue_title" />
+        <mn.donate.yougo.text.Regular
+            android:id="@+id/user_feed_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:padding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <com.android.volley.toolbox.NetworkImageView
-        android:id="@+id/user_ac_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/user_feed_com_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:scaleType="centerCrop" />
 
-    <mn.donate.yougo.text.Regular
-        android:id="@+id/user_ac_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="4"
-        android:padding="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <ImageView
-        android:id="@+id/user_ac_rating"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/title_trans"
-        android:src="@drawable/rate_one" />
+        <mn.donate.yougo.text.Light
+            android:id="@+id/user_feed_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/gray_title" />
+    </LinearLayout>
 
 </LinearLayout>

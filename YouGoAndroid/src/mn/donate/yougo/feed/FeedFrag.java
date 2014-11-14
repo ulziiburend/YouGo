@@ -92,7 +92,6 @@ public class FeedFrag extends Fragment implements OnRefreshListener,
 		super.onActivityCreated(savedInstanceState);
 		preferences = getActivity().getSharedPreferences("user", 0);
 		 UserId = preferences.getString("my_id", "0");
-//		UserId = "1";
 		helper = new DatabaseHelper(getActivity());
 		try {
 			mListItems = helper.getUserFeedDao().queryForAll();
@@ -100,7 +99,7 @@ public class FeedFrag extends Fragment implements OnRefreshListener,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new UserFeedAdapter(getActivity(), mListItems);
+		adapter = new UserFeedAdapter(getActivity(), mListItems,UserId);
 		mListView.setAdapter(adapter);
 
 		if (Utils.isNetworkAvailable(getActivity())) {
@@ -145,7 +144,6 @@ public class FeedFrag extends Fragment implements OnRefreshListener,
 	private void getActivityFeed(int sIndex, String user_id,
 			final boolean refresh) {
 		mListView.addFooterView(load_footer);
-		Log.i("asdasdasd", user_id);
 		CustomRequest adReq = new CustomRequest(Method.GET,
 				this.getString(R.string.mainIp) + "feed/user_id=" + user_id
 						+ "&index=" + sIndex, null, new Listener<JSONObject>() {

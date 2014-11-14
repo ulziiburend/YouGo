@@ -12,12 +12,10 @@
         android:padding="5dp" >
 
         <mn.donate.yougo.utils.CircleImageView
-            android:layout_width="100dp"
             android:id="@+id/friend_img"
+            android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/user"
-            app:border_color="@color/mainColor"
-            app:border_width="1dp" />
+            android:src="@drawable/user" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -91,31 +89,38 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:background="@drawable/follow_but"
-                android:text="@string/follow"
-                android:textColor="@android:color/white" />
+                android:text="@string/following"
+                android:textColor="@color/gray_title" />
         </LinearLayout>
     </LinearLayout>
 
-<RelativeLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+         <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/friend_swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ListView
+            android:id="@+id/friend_listView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@android:color/transparent"
+            android:scrollbars="none" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
+        android:id="@+id/friend_list_nodata"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:gravity="center"
+        android:paddingTop="15dp"
         android:text="@string/noData"
-        android:textColor="@color/mainColor" />
+        android:textColor="@color/mainColor"
+        android:visibility="gone" />
+    </RelativeLayout>
 
-    <ListView
-        android:id="@+id/friend_feed"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:cacheColorHint="@android:color/transparent"
-        android:divider="@android:color/transparent"
-        android:scrollbars="none" />
-
-
-</RelativeLayout>
 </LinearLayout>

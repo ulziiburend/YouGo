@@ -5,7 +5,7 @@
     <string name="app_name">YouGo</string>
     <string name="title_section1">Нүүр</string>
     <string name="title_section2">Мэдээний сурвалж </string>
-        <string name="title_section3">Сэгсэр</string>
+    <string name="title_section3">Сэгсэр</string>
     <string name="title_section4">Газрын зураг</string>
     <string name="title_section5">Бидний тухай</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -18,17 +18,22 @@
     	<string name="mainIp">http://50.31.138.168:8000/mobile/</string>
 	<string name="mainIpImage">http://50.31.138.168:8000/image_upload/</string>
     -->
-    <string name="mainIp">http://192.168.1.5:3000/mobile/</string>
-    <string name="mainIpImage">http://192.168.1.5:3000/image_upload/</string>
+    <string name="mainIp">http://192.168.1.2:3000/mobile/</string>
+    <string name="mainIpImage">http://192.168.1.2:3000/image_upload/</string>
     <string name="gcm_deleted">From GCM: server deleted %1$d pending messages!</string>
     <string name="loading">Ачааллаж байна...</string>
     <string name="noData">Үр дүн байхгүй байна</string>
     <string name="search_title">Газар хайх</string>
     <string name="logout_title">Гарах</string>
     <string name="noNet">Интернет холболтоо шалгана уу</string>
-  <string name="follow">Дагах</string>
-  <string name="followers">Дагагч</string>
+    <string name="follow">Дагах</string>
+    <string name="followers">Дагагч</string>
     <string name="following">Дагаж байна</string>
-      <string name="mySaved">Хадгалсан газрууд</string>
+    <string name="mySaved">Хадгалсан газрууд</string>
     <string name="myActivity">Идэвх</string>
+    <string name="onGPS">Please on GPS</string>
+    <string name="skip">skip</string>
+    <string name="yes">Yes</string>
+        <string name="shakeToStart">Shake to Start</string>
+    <string name="no">No</string>
 </resources>
