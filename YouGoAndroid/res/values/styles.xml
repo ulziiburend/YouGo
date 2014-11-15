@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="TransparentTheme"></style>
 
@@ -24,9 +24,12 @@
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
+    <!-- ActionBar title text -->
+
 
     <!-- ActionBar styles -->
     <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+
         <!-- Support library compatibility -->
         <item name="background">@color/gray_title</item>
         <item name="displayOptions">homeAsUp|showHome|showTitle</item>
@@ -34,6 +37,31 @@
 
     <style name="CustomDialogTheme" parent="@android:style/Theme.Dialog">
         <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <!-- fading action bar -->
+    <style name="Widget" />
+
+    <style name="Widget.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse"></style>
+
+    <style name="Widget.Light" />
+
+    <style name="Widget.Light.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid"></style>
+
+    <style name="Widget.ActionBar.Transparent">
+        <item name="background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.Light.ActionBar.Transparent">
+        <item name="background">@android:color/transparent</item>
+    </style>
+
+    <style name="AppTheme.Light.TranslucentActionBar" parent="Theme.AppCompat.Light">
+                  <item name="displayOptions">homeAsUp|showHome|showTitle</item>
+        <item name="actionBarStyle">@style/Widget.ActionBar.Transparent</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        
     </style>
 
 </resources>

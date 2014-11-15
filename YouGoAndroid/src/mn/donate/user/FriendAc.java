@@ -59,7 +59,6 @@ public class FriendAc extends ActionBarActivity implements OnRefreshListener,
 	private UserAcAdapter adapter;
 	private boolean isFinish = false;
 	private boolean flag_loading = false;
-	private View v;
 	int mNum;
 	TextView nodata;
 	SwipeRefreshLayout swipeLayout;
@@ -70,11 +69,14 @@ public class FriendAc extends ActionBarActivity implements OnRefreshListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.friend_profile);
+
 		b = getIntent().getExtras();
 		bar = getSupportActionBar();
 		bar.setDisplayShowHomeEnabled(true);
 		bar.setHomeButtonEnabled(true);
+		bar.setDisplayHomeAsUpEnabled(true);
 		// views
 		name = (Bold) findViewById(R.id.friend_name);
 		followers = (Light) findViewById(R.id.friend_followers);
@@ -96,7 +98,7 @@ public class FriendAc extends ActionBarActivity implements OnRefreshListener,
 
 		adapter = new UserAcAdapter(this, mListItems);
 		mListView.setAdapter(adapter);
-		UserId=b.getInt("user_id")+"";
+		UserId = b.getInt("user_id") + "";
 		if (Utils.isNetworkAvailable(this)) {
 			getUserInfo(b.getInt("user_id"), b.getInt("my_id"));
 			getActivityFeed(index, FriendAc.UserId, false);
@@ -203,7 +205,7 @@ public class FriendAc extends ActionBarActivity implements OnRefreshListener,
 
 					@Override
 					public void onResponse(JSONObject response) {
-						Log.e("responce", response + "");
+						Log.e("responce sdara", response + "");
 						try {
 							if (response != null
 									&& response.getInt("response") == 1) {
@@ -314,7 +316,12 @@ public class FriendAc extends ActionBarActivity implements OnRefreshListener,
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-
+		if (v == follow) {
+			sendFollowReq();
+		}
 	}
 
+	private boolean sendFollowReq() {
+		return false;
+	}
 }

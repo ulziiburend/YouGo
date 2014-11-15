@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -8,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp" >
+        android:orientation="horizontal" >
 
         <mn.donate.yougo.utils.CircleImageView
             android:id="@+id/friend_img"
@@ -90,7 +88,7 @@
                 android:layout_margin="4dp"
                 android:background="@drawable/follow_but"
                 android:text="@string/following"
-                android:textColor="@color/gray_title" />
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </LinearLayout>
 
@@ -98,29 +96,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-         <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/friend_swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/friend_swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
-        <ListView
-            android:id="@+id/friend_listView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="@android:color/transparent"
-            android:scrollbars="none" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+            <ListView
+                android:id="@+id/friend_listView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@android:color/transparent"
+                android:scrollbars="none" />
+        </android.support.v4.widget.SwipeRefreshLayout>
 
-    <TextView
-        android:id="@+id/friend_list_nodata"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingTop="15dp"
-        android:text="@string/noData"
-        android:textColor="@color/mainColor"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/friend_list_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="15dp"
+            android:text="@string/noData"
+            android:textColor="@color/mainColor"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </LinearLayout>

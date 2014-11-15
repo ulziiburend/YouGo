@@ -510,13 +510,15 @@ public class PlaceFrag extends Fragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_search:
+
+			mSearchView.setIconified(false);
+			break;
+		case R.id.action_map:
 			placeSearch = new PlaceFind();
 			getActivity().getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, placeSearch).addToBackStack("search")
 					.commit();
-			mSearchView.setIconified(false);
 			break;
-
 		}
 
 		return true;
@@ -599,10 +601,10 @@ public class PlaceFrag extends Fragment implements
 		// Get the current location's latitude & longitude
 		Location currentLocation = mLocationClient.getLastLocation();
 
-		lat = Double.toString(currentLocation.getLatitude());
-		lng = Double.toString(currentLocation.getLongitude());
-		Log.v("long", lng);
-		Log.v("lat", lat);
+//		lat = Double.toString(currentLocation.getLatitude());
+//		lng = Double.toString(currentLocation.getLongitude());
+//		Log.v("long", lng);
+//		Log.v("lat", lat);
 
 	}
 

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res/mn.donate.yougo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:scrollbars="none" >
 
     <LinearLayout
@@ -10,11 +11,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/place_det_slider"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:auto_cycle="false" />
+  
 
         <LinearLayout
             android:layout_width="match_parent"

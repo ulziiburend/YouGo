@@ -4,7 +4,7 @@
  * aapt tool from the resource data it found.  It
  * should not be modified by hand.
  */
-package android.support.v7.appcompat;
+package com.manuelpeinado.fadingactionbar;
 
 public final class R {
 	public static final class anim {
@@ -252,6 +252,8 @@ public final class R {
 		public static final int abc_textfield_searchview_holo_light = 0x7f020054;
 		public static final int abc_textfield_searchview_right_holo_dark = 0x7f020055;
 		public static final int abc_textfield_searchview_right_holo_light = 0x7f020056;
+		public static final int fab__gradient = 0x7f02009a;
+		public static final int fab__gradient_light = 0x7f02009b;
 	}
 	public static final class id {
 		public static final int action_bar = 0x7f060048;
@@ -278,6 +280,12 @@ public final class R {
 		public static final int end = 0x7f060013;
 		public static final int expand_activities_button = 0x7f060052;
 		public static final int expanded_menu = 0x7f060058;
+		public static final int fab__container = 0x7f060089;
+		public static final int fab__content_top_margin = 0x7f06008a;
+		public static final int fab__gradient = 0x7f060086;
+		public static final int fab__header_container = 0x7f060085;
+		public static final int fab__listview_background = 0x7f060087;
+		public static final int fab__scroll_view = 0x7f060088;
 		public static final int home = 0x7f060014;
 		public static final int homeAsUp = 0x7f060005;
 		public static final int icon = 0x7f060056;
@@ -343,6 +351,10 @@ public final class R {
 		public static final int abc_search_dropdown_item_icons_2line = 0x7f030015;
 		public static final int abc_search_view = 0x7f030016;
 		public static final int abc_simple_decor = 0x7f030017;
+		public static final int fab__header_container = 0x7f030028;
+		public static final int fab__listview_container = 0x7f030029;
+		public static final int fab__scrollview_container = 0x7f03002a;
+		public static final int fab__webview_container = 0x7f03002b;
 		public static final int support_simple_spinner_dropdown_item = 0x7f03003e;
 	}
 	public static final class string {

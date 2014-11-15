@@ -24,6 +24,7 @@
     <string name="loading">Ачааллаж байна...</string>
     <string name="noData">Үр дүн байхгүй байна</string>
     <string name="search_title">Газар хайх</string>
+    <string name="share_title">Хуваалцах</string>
     <string name="logout_title">Гарах</string>
     <string name="noNet">Интернет холболтоо шалгана уу</string>
     <string name="follow">Дагах</string>

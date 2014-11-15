@@ -91,7 +91,7 @@ public class FeedFrag extends Fragment implements OnRefreshListener,
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		preferences = getActivity().getSharedPreferences("user", 0);
-		 UserId = preferences.getString("my_id", "0");
+		UserId = preferences.getString("my_id", "0");
 		helper = new DatabaseHelper(getActivity());
 		try {
 			mListItems = helper.getUserFeedDao().queryForAll();
@@ -99,7 +99,7 @@ public class FeedFrag extends Fragment implements OnRefreshListener,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new UserFeedAdapter(getActivity(), mListItems,UserId);
+		adapter = new UserFeedAdapter(getActivity(), mListItems, UserId);
 		mListView.setAdapter(adapter);
 
 		if (Utils.isNetworkAvailable(getActivity())) {
